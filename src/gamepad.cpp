@@ -69,7 +69,7 @@ void Gamepad::setup()
 	options = mpgStorage->getGamepadOptions();
 
 	// Configure pin mapping
-	f2Mask = (GAMEPAD_MASK_A1 | GAMEPAD_MASK_S2);
+	f2Mask = (GAMEPAD_MASK_A2 | GAMEPAD_MASK_S2);
 	BoardOptions boardOptions = Storage::getInstance().getBoardOptions();
 
 	mapDpadUp    = new GamepadButtonMapping(boardOptions.pinDpadUp,    GAMEPAD_MASK_UP);
@@ -118,7 +118,7 @@ void Gamepad::process()
 {
 	memcpy(&rawState, &state, sizeof(GamepadState));
 
-	state.dpad = runSOCDCleaner(options.socdMode, state.dpad);
+	state.dpad = runSOCDCleaner(options.udSocdMode,options.lrSocdMode, state.dpad);
 
 	switch (options.dpadMode)
 	{
@@ -255,29 +255,45 @@ GamepadHotkey Gamepad::hotkey()
 	}
 	else if (pressedF2())
 	{
-		switch (state.dpad & GAMEPAD_MASK_DPAD)
+		switch (state.buttons & GAMEPAD_MASK_BUTTON)
 		{
-			case GAMEPAD_MASK_DOWN:
-				action = HOTKEY_SOCD_NEUTRAL;
-				options.socdMode = SOCD_MODE_NEUTRAL;
-				state.dpad = 0;
-				state.buttons &= ~(f2Mask);
-				break;
-
-			case GAMEPAD_MASK_UP:
+			case GAMEPAD_MASK_B3:
 				action = HOTKEY_SOCD_UP_PRIORITY;
-				options.socdMode = SOCD_MODE_UP_PRIORITY;
+				options.udSocdMode = UD_SOCD_MODE_UP_PRIORITY;
 				state.dpad = 0;
 				state.buttons &= ~(f2Mask);
 				break;
 
-			case GAMEPAD_MASK_LEFT:
+			case GAMEPAD_MASK_B4:
 				action = HOTKEY_SOCD_LAST_INPUT;
-				options.socdMode = SOCD_MODE_SECOND_INPUT_PRIORITY;
+				options.udSocdMode = UD_SOCD_MODE_SECOND_INPUT_PRIORITY;
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
+				break;
+				
+			case GAMEPAD_MASK_L1:
+				action = HOTKEY_SOCD_NEUTRAL;
+				options.udSocdMode = UD_SOCD_MODE_NEUTRAL;
 				state.dpad = 0;
 				state.buttons &= ~(f2Mask);
 				break;
 
+			case GAMEPAD_MASK_B1:
+				action = HOTKEY_LR_LAST_INPUT;
+				options.lrSocdMode = LR_SOCD_MODE_SECOND_INPUT_PRIORITY;
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
+				break;
+
+			case GAMEPAD_MASK_B2:
+				action = HOTKEY_LR_LAST_INPUT;
+				options.lrSocdMode = LR_SOCD_MODE_NEUTRAL;
+				state.dpad = 0;
+				state.buttons &= ~(f2Mask);
+				break;
+		}
+		switch(state.dpad & GAMEPAD_MASK_DPAD)
+		{
 			case GAMEPAD_MASK_RIGHT:
 				if (lastAction != HOTKEY_INVERT_Y_AXIS)
 					options.invertYAxis = !options.invertYAxis;
@@ -538,6 +554,8 @@ GamepadOptions GamepadStorage::getGamepadOptions()
 #else
 		options.socdMode = SOCD_MODE_NEUTRAL;
 #endif
+		options.lrSocdMode = LR_SOCD_MODE_NEUTRAL;
+		options.udSocdMode = UD_SOCD_MODE_NEUTRAL;
 		options.invertXAxis = false;
 		options.invertYAxis = false;
 		options.keyDpadUp    = KEY_DPAD_UP;

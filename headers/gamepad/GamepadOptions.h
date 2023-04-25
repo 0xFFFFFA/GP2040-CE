@@ -13,6 +13,8 @@ struct GamepadOptions
 	InputMode inputMode {InputMode::INPUT_MODE_XINPUT}; 
 	DpadMode dpadMode {DpadMode::DPAD_MODE_DIGITAL};
 	SOCDMode socdMode {SOCDMode::SOCD_MODE_NEUTRAL};
+	LRSOCDMode lrSocdMode {LRSOCDMode::LR_SOCD_MODE_NEUTRAL};
+	UDSOCDMode udSocdMode {UDSOCDMode::UD_SOCD_MODE_NEUTRAL};
 	bool invertXAxis;
 	bool invertYAxis;
 

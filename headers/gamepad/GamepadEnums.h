@@ -26,6 +26,19 @@ typedef enum
 	DPAD_MODE_RIGHT_ANALOG,
 } DpadMode;
 
+typedef enum
+{
+	LR_SOCD_MODE_NEUTRAL,
+//	LR_SOCD_MODE_FIRST_INPUT_PRIORITY,
+	LR_SOCD_MODE_SECOND_INPUT_PRIORITY,
+} LRSOCDMode;
+
+typedef enum
+{
+	UD_SOCD_MODE_NEUTRAL,
+	UD_SOCD_MODE_UP_PRIORITY,
+	UD_SOCD_MODE_SECOND_INPUT_PRIORITY,
+} UDSOCDMode;
 // The available SOCD cleaning methods
 typedef enum
 {
@@ -58,4 +71,6 @@ typedef enum
 	HOTKEY_SOCD_LAST_INPUT   = (1U << 7),
 	HOTKEY_INVERT_X_AXIS     = (1U << 8),
 	HOTKEY_INVERT_Y_AXIS     = (1U << 9),
+	HOTKEY_LR_NETURAL        = (1U << 10),
+	HOTKEY_LR_LAST_INPUT     = (1U << 11),
 } GamepadHotkey;

@@ -68,6 +68,7 @@
 #define GAMEPAD_MASK_RY    (1UL << 23)
 
 #define GAMEPAD_MASK_DPAD (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN | GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT)
+#define GAMEPAD_MASK_BUTTON 0xFF
 
 #define GAMEPAD_JOYSTICK_MIN 0
 #define GAMEPAD_JOYSTICK_MID 0x7FFF
@@ -151,7 +152,7 @@ inline uint16_t dpadToAnalogY(uint8_t dpad)
  * @param dpad The GamepadState.dpad value.
  * @return uint8_t The clean D-pad value.
  */
-inline uint8_t runSOCDCleaner(SOCDMode mode, uint8_t dpad)
+inline uint8_t runSOCDCleaner(UDSOCDMode ud_mode, LRSOCDMode lr_mode, uint8_t dpad)
 {
 	static DpadDirection lastUD = DIRECTION_NONE;
 	static DpadDirection lastLR = DIRECTION_NONE;
@@ -160,12 +161,12 @@ inline uint8_t runSOCDCleaner(SOCDMode mode, uint8_t dpad)
 	switch (dpad & (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN))
 	{
 		case (GAMEPAD_MASK_UP | GAMEPAD_MASK_DOWN):
-			if (mode == SOCD_MODE_UP_PRIORITY)
+			if (ud_mode == UD_SOCD_MODE_UP_PRIORITY)
 			{
 				newDpad |= GAMEPAD_MASK_UP;
 				lastUD = DIRECTION_UP;
 			}
-			else if (mode == SOCD_MODE_SECOND_INPUT_PRIORITY && lastUD != DIRECTION_NONE)
+			else if (ud_mode == UD_SOCD_MODE_SECOND_INPUT_PRIORITY && lastUD != DIRECTION_NONE)
 				newDpad |= (lastUD == DIRECTION_UP) ? GAMEPAD_MASK_DOWN : GAMEPAD_MASK_UP;
 			else
 				lastUD = DIRECTION_NONE;
@@ -189,7 +190,7 @@ inline uint8_t runSOCDCleaner(SOCDMode mode, uint8_t dpad)
 	switch (dpad & (GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT))
 	{
 		case (GAMEPAD_MASK_LEFT | GAMEPAD_MASK_RIGHT):
-			if (mode == SOCD_MODE_SECOND_INPUT_PRIORITY && lastLR != DIRECTION_NONE)
+			if (lr_mode == LR_SOCD_MODE_SECOND_INPUT_PRIORITY && lastLR != DIRECTION_NONE)
 				newDpad |= (lastLR == DIRECTION_LEFT) ? GAMEPAD_MASK_RIGHT : GAMEPAD_MASK_LEFT;
 			else
 				lastLR = DIRECTION_NONE;
